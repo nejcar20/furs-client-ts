@@ -32,12 +32,18 @@ jobs:
       run: npm run build
       
     - name: Setup test certificate from secrets
-      if: ${{ secrets.TEST_CERTIFICATE_BASE64 != '' }}
+      env:
+        TEST_CERTIFICATE_BASE64: ${{ secrets.TEST_CERTIFICATE_BASE64 }}
+        TEST_CERTIFICATE_PASSWORD: ${{ secrets.TEST_CERTIFICATE_PASSWORD }}
       run: |
-        echo "Setting up test certificate from GitHub secrets..."
-        echo "${{ secrets.TEST_CERTIFICATE_BASE64 }}" | base64 -d > test-certificate.p12
-        echo "TEST_CERTIFICATE_PASSWORD=${{ secrets.TEST_CERTIFICATE_PASSWORD }}" >> $GITHUB_ENV
-        echo "Test certificate configured, integration tests will run"
+        if [ -n "$TEST_CERTIFICATE_BASE64" ]; then
+          echo "Setting up test certificate from GitHub secrets..."
+          echo "$TEST_CERTIFICATE_BASE64" | base64 -d > test-certificate.p12
+          echo "TEST_CERTIFICATE_PASSWORD=$TEST_CERTIFICATE_PASSWORD" >> $GITHUB_ENV
+          echo "Test certificate configured, integration tests will run"
+        else
+          echo "No certificate in secrets, skipping setup"
+        fi
       
     - name: Check test certificate availability
       run: |
