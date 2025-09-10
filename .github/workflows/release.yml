@@ -118,7 +118,7 @@ jobs:
             repo: context.repo.repo,
             title: `🚀 Release ${{ steps.bump-version.outputs.new }}`,
             head: '${{ steps.branch.outputs.branch }}',
-            base: 'main',
+            base: 'master',
             body: `## 📦 Version Bump: ${{ steps.current-version.outputs.current }} → ${{ steps.bump-version.outputs.new }}
           
           ### 🔄 Changes
@@ -138,7 +138,7 @@ jobs:
           
           ### 🚀 What Happens Next
           1. **Review this PR** - Check the changes look correct
-          2. **Merge to main** - This will trigger:
+          2. **Merge to master** - This will trigger:
              - Full CI/CD pipeline (test on multiple Node.js versions)
              - Automatic NPM publishing (if version changed)
              - GitHub release creation
