@@ -125,6 +125,20 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Setup test certificate from secrets for publish
+        env:
+          TEST_CERTIFICATE_BASE64: ${{ secrets.TEST_CERTIFICATE_BASE64 }}
+          TEST_CERTIFICATE_PASSWORD: ${{ secrets.TEST_CERTIFICATE_PASSWORD }}
+        run: |
+          if [ -n "$TEST_CERTIFICATE_BASE64" ]; then
+            echo "Setting up test certificate for publish tests..."
+            echo "$TEST_CERTIFICATE_BASE64" | base64 -d > test-certificate.p12
+            echo "TEST_CERTIFICATE_PASSWORD=$TEST_CERTIFICATE_PASSWORD" >> $GITHUB_ENV
+            echo "Test certificate configured for prepublish tests"
+          else
+            echo "Warning: No certificate in secrets, prepublish tests may fail"
+          fi
+
       - name: Check if version changed
         id: version-check
         run: |
