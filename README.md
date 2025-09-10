@@ -130,11 +130,11 @@ console.log('ZOI:', result.zoi);
 
 ## 📚 Documentation
 
-- [Getting Started Guide](./docs/getting-started.md)
-- [API Reference](./docs/api-reference.md)
-- [TypeScript Examples](./examples/)
-- [Error Handling](./docs/error-handling.md)
-- [Testing Guide](./docs/testing.md)
+- [Getting Started Guide](./docs/getting-started.md) - Complete setup and usage guide
+- [API Reference](./docs/api-reference.md) - Full TypeScript API documentation
+- [Error Handling Guide](./docs/error-handling.md) - Comprehensive error handling
+- [Testing Guide](./docs/testing.md) - Unit and integration testing
+- [Production Deployment](./docs/production-deployment.md) - Production best practices
 
 ## 🧪 Testing
 

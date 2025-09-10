@@ -389,7 +389,7 @@ class FursIntegrationTest {
  */
 async function runTypeScriptTests(): Promise<void> {
   const testConfig: TestConfig = {
-    certPath: './10641025-1.p12',
+    certPath: './test-certificate.p12',
     certPassword: 'X5T7FCINH1AE',
     taxNumber: 10641025,
     environment: 'test',

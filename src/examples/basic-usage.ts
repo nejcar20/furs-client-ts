@@ -15,7 +15,7 @@ async function main(): Promise<void> {
   try {
     // Initialize the client
     const client = new FursClient({
-      certPath: './10641025-1.p12',
+      certPath: './test-certificate.p12',
       certPassword: 'X5T7FCINH1AE',
       taxNumber: 10641025,
       environment: 'test', // or 'production'

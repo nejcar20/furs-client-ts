@@ -1,0 +1,175 @@
+name: Version Bump & Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version-type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      release-notes:
+        description: 'Release notes (optional)'
+        required: false
+        type: string
+
+jobs:
+  version-bump:
+    name: Bump Version & Create PR
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+    - name: Get current version
+      id: current-version
+      run: |
+        CURRENT=$(node -p "require('./package.json').version")
+        echo "current=$CURRENT" >> $GITHUB_OUTPUT
+        
+    - name: Bump version
+      id: bump-version
+      run: |
+        NEW_VERSION=$(npm version ${{ github.event.inputs.version-type }} --no-git-tag-version)
+        echo "new=$NEW_VERSION" >> $GITHUB_OUTPUT
+        echo "Bumped version from ${{ steps.current-version.outputs.current }} to $NEW_VERSION"
+        
+    - name: Update CHANGELOG.md
+      run: |
+        DATE=$(date +"%Y-%m-%d")
+        VERSION="${{ steps.bump-version.outputs.new }}"
+        
+        # Create new changelog entry
+        cat > temp_changelog.md << EOF
+        # Changelog
+        
+        All notable changes to the \`furs-client-ts\` project will be documented in this file.
+        
+        The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+        and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+        
+        ## [$VERSION] - $DATE
+        
+        ### Changes
+        ${{ github.event.inputs.release-notes || '- Version bump' }}
+        
+        EOF
+        
+        # Append existing changelog (skip the header)
+        tail -n +8 CHANGELOG.md >> temp_changelog.md
+        mv temp_changelog.md CHANGELOG.md
+        
+    - name: Run tests
+      run: |
+        npm run build
+        npm run test:ts:unit
+        
+    - name: Create feature branch
+      run: |
+        BRANCH_NAME="release/${{ steps.bump-version.outputs.new }}"
+        git checkout -b "$BRANCH_NAME"
+        echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
+      id: branch
+      
+    - name: Commit changes
+      run: |
+        git add package.json package-lock.json CHANGELOG.md
+        git commit -m "chore: bump version to ${{ steps.bump-version.outputs.new }}
+        
+        - Updated package.json version
+        - Updated CHANGELOG.md with new entry
+        - Automated by GitHub Actions
+        
+        Release type: ${{ github.event.inputs.version-type }}
+        ${{ github.event.inputs.release-notes && format('Notes: {0}', github.event.inputs.release-notes) || '' }}"
+        
+    - name: Push feature branch
+      run: |
+        git push origin "${{ steps.branch.outputs.branch }}"
+        
+    - name: Create Pull Request
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pullRequest } = await github.rest.pulls.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: `🚀 Release ${{ steps.bump-version.outputs.new }}`,
+            head: '${{ steps.branch.outputs.branch }}',
+            base: 'main',
+            body: `## 📦 Version Bump: ${{ steps.current-version.outputs.current }} → ${{ steps.bump-version.outputs.new }}
+          
+          ### 🔄 Changes
+          - **Type**: \`${{ github.event.inputs.version-type }}\` version bump
+          - **Previous Version**: \`${{ steps.current-version.outputs.current }}\`
+          - **New Version**: \`${{ steps.bump-version.outputs.new }}\`
+          
+          ### 📝 Release Notes
+          ${{ github.event.inputs.release-notes || '_No specific release notes provided_' }}
+          
+          ### ✅ Automated Checks
+          - [x] Version bumped in \`package.json\`
+          - [x] \`package-lock.json\` updated
+          - [x] \`CHANGELOG.md\` updated with new entry
+          - [x] TypeScript builds successfully
+          - [x] Unit tests pass
+          
+          ### 🚀 What Happens Next
+          1. **Review this PR** - Check the changes look correct
+          2. **Merge to main** - This will trigger:
+             - Full CI/CD pipeline (test on multiple Node.js versions)
+             - Automatic NPM publishing (if version changed)
+             - GitHub release creation
+             - NPM package available at: \`npm install furs-client-ts@${{ steps.bump-version.outputs.new }}\`
+          
+          ### 🛠️ Manual Testing (Optional)
+          \`\`\`bash
+          git checkout ${{ steps.branch.outputs.branch }}
+          npm ci
+          npm test
+          npm run build
+          \`\`\`
+          
+          ---
+          
+          **🤖 This PR was automatically created by GitHub Actions**
+          
+          Triggered by: @${{ github.actor }}
+          Workflow: \`${{ github.workflow }}\`
+          `,
+            draft: false
+          });
+          
+          console.log(`Created PR #${pullRequest.number}: ${pullRequest.html_url}`);
+          
+          // Add labels
+          await github.rest.issues.addLabels({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: pullRequest.number,
+            labels: ['release', 'automated', `${{ github.event.inputs.version-type }}-release`]
+          });
+          
+          return pullRequest.number;

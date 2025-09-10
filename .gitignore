@@ -91,6 +91,9 @@ logs
 *.key
 *.cer
 
+# Local certificates directory for development
+local-certs/
+
 # IDE files
 .vscode/
 .idea/

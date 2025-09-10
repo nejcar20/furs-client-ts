@@ -13,7 +13,7 @@ async function runIntegrationTests() {
 
   // Test configuration - update these values for your certificate
   const config = {
-    certPath: './10641025-1.p12',  // Your certificate file
+    certPath: './test-certificate.p12',  // Your test certificate file
     certPassword: 'X5T7FCINH1AE',  // Your certificate password
     taxNumber: 10641025,           // Your tax number
     environment: 'test',           // Using test environment

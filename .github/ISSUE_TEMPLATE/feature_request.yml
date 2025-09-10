@@ -1,0 +1,137 @@
+name: ✨ Feature Request
+description: Suggest a new feature for furs-client-ts
+title: "[Feature]: "
+labels: ["enhancement", "feature-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Your ideas help make furs-client-ts better.
+
+  - type: checkboxes
+    id: preliminary-checks
+    attributes:
+      label: Pre-submission checklist
+      options:
+        - label: I have searched existing issues and discussions
+          required: true
+        - label: This feature is not already available in the current version
+          required: true
+        - label: This feature is related to FURS integration functionality
+          required: true
+
+  - type: textarea
+    id: feature-summary
+    attributes:
+      label: Feature Summary
+      description: A brief summary of the feature you'd like to see
+      placeholder: Describe the feature in one or two sentences
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: |
+        As a developer using furs-client-ts, I want to... 
+        So that I can...
+        Currently, I have to... which is problematic because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution
+      description: How do you envision this feature working?
+      placeholder: |
+        I suggest adding...
+        The API could look like...
+        This would work by...
+    validations:
+      required: true
+
+  - type: textarea
+    id: api-example
+    attributes:
+      label: API Usage Example
+      description: Show how you'd like to use this feature
+      render: typescript
+      placeholder: |
+        import { FursClient } from 'furs-client-ts';
+        
+        const client = new FursClient({...});
+        
+        // Example of how the new feature would be used
+        const result = await client.newFeature({
+          // parameters
+        });
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What alternatives have you considered?
+      placeholder: |
+        - Alternative 1: ...
+        - Alternative 2: ...
+        - Current workaround: ...
+
+  - type: dropdown
+    id: feature-type
+    attributes:
+      label: Feature Category
+      description: What type of feature is this?
+      options:
+        - New FURS API endpoint support
+        - Enhanced error handling
+        - Performance improvement
+        - Developer experience enhancement
+        - TypeScript type improvements
+        - Documentation improvement
+        - Testing enhancement
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Low - Nice to have
+        - Medium - Would be helpful
+        - High - Important for my use case
+        - Critical - Blocking my work
+    validations:
+      required: true
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use Case Details
+      description: Describe your specific use case
+      placeholder: |
+        I'm building... 
+        My users need to...
+        This feature would help because...
+
+  - type: checkboxes
+    id: implementation-offer
+    attributes:
+      label: Implementation
+      description: Are you willing to help implement this feature?
+      options:
+        - label: I'd be willing to submit a pull request for this feature
+        - label: I can help with testing
+        - label: I can help with documentation
+        - label: I can provide feedback during development
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or examples

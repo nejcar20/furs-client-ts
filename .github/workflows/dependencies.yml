@@ -1,0 +1,110 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * MON'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  dependency-check:
+    name: Check Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Check for outdated packages
+      run: |
+        echo "## 📦 Dependency Status Report" >> dependency_report.md
+        echo "" >> dependency_report.md
+        echo "Generated on: $(date)" >> dependency_report.md
+        echo "" >> dependency_report.md
+        
+        echo "### 🔍 Outdated Packages" >> dependency_report.md
+        npm outdated --long || echo "No outdated packages found" >> dependency_report.md
+        echo "" >> dependency_report.md
+        
+        echo "### 🔒 Security Audit" >> dependency_report.md
+        npm audit --audit-level=moderate || echo "Security audit completed" >> dependency_report.md
+        echo "" >> dependency_report.md
+        
+    - name: Run security audit
+      continue-on-error: true
+      run: npm audit --audit-level=high
+      
+    - name: Test with current dependencies
+      run: |
+        npm run build
+        npm run test:ts:unit
+        
+    - name: Create issue for updates
+      if: failure()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          let body = '## 🚨 Dependency Update Required\n\n';
+          
+          try {
+            const report = fs.readFileSync('dependency_report.md', 'utf8');
+            body += report;
+          } catch (error) {
+            body += 'Dependency check failed. Please review manually.\n';
+          }
+          
+          body += '\n### 🔧 Action Required\n';
+          body += '- Review outdated packages\n';
+          body += '- Update dependencies if necessary\n';
+          body += '- Run full test suite after updates\n';
+          body += '- Consider security implications\n\n';
+          body += '**🤖 This issue was automatically created by GitHub Actions**';
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: '🚨 Dependency Updates Required',
+            body: body,
+            labels: ['dependencies', 'maintenance', 'automated']
+          });
+
+  security-check:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run npm audit
+      run: npm audit --audit-level=critical
+      
+    - name: Check for vulnerable packages
+      run: |
+        # Check if any critical vulnerabilities exist
+        if npm audit --audit-level=critical --json | jq -e '.metadata.vulnerabilities.critical > 0' > /dev/null 2>&1; then
+          echo "❌ Critical vulnerabilities found!"
+          npm audit --audit-level=critical
+          exit 1
+        else
+          echo "✅ No critical vulnerabilities found"
+        fi
