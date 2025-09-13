@@ -1,8 +1,8 @@
 import { FursClient } from '../FursClient';
-import { 
-  FursError, 
-  FursValidationError, 
-  FursAuthenticationError 
+import {
+  FursError,
+  FursValidationError,
+  FursAuthenticationError
 } from '../errors';
 import {
   FursClientConfig,
@@ -11,6 +11,9 @@ import {
   BusinessPremiseResult,
   InvoiceResult
 } from '../types';
+import { CodeFormat } from '../services/codeGenerator';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * Integration Tests for FURS Client (TypeScript)
@@ -42,9 +45,10 @@ class FursIntegrationTest {
       await this.testClientInitialization();
       await this.testBusinessPremiseRegistration();
       await this.testInvoiceFiscalization();
+      await this.testCodeGeneration();
       await this.testErrorHandling();
       await this.testTypeValidation();
-      
+
       this.printTestSummary();
     } catch (error) {
       this.handleTestError(error as Error);
@@ -177,7 +181,11 @@ class FursIntegrationTest {
       console.log('   - ZOI (string):', result.zoi);
       console.log('   - Success flag (boolean):', result.success);
       console.log('   - Type validation:', this.validateInvoiceResult(result));
-      
+
+      // Store for code generation test
+      (this as any).lastInvoiceResult = result;
+      (this as any).lastInvoiceData = invoiceData;
+
       this.testResults.set('invoiceFiscalization', true);
     } catch (error) {
       console.log('❌ Invoice fiscalization failed:', (error as Error).message);
@@ -186,11 +194,151 @@ class FursIntegrationTest {
     }
     console.log();
   }
+
   /**
-   * Test 4: Error Handling with TypeScript error types
+   * Test 4: Code Generation (QR, PDF417, Code128)
+   */
+  private async testCodeGeneration(): Promise<void> {
+    console.log('🔲 TEST 4: Code Generation (QR, PDF417, Code128)');
+    console.log('================================================');
+
+    try {
+      // Use the last invoice result if available, or use test data
+      const lastResult = (this as any).lastInvoiceResult;
+      const lastData = (this as any).lastInvoiceData;
+
+      const zoi = lastResult?.zoi || 'a7e5f55e1dbb48b799268e1a6d8618a3';
+      const issueDateTime = lastData?.issueDateTime || new Date();
+
+      console.log('📊 Using invoice data:');
+      console.log('   - ZOI:', zoi);
+      console.log('   - Issue DateTime:', issueDateTime);
+
+      // Test 1: Generate QR Code
+      console.log('\n1️⃣ Generating QR Code...');
+      const qrCode = await this.client.generateQRCode(
+        zoi,
+        issueDateTime,
+        CodeFormat.DATA_URL
+      );
+      console.log('   ✅ QR Code generated');
+      console.log('   - Format:', qrCode.format);
+      console.log('   - Data URL length:', (qrCode.data as string).length);
+      console.log('   - 60-digit data:', qrCode.formattedData.substring(0, 30) + '...');
+
+      // Test 2: Generate PDF417 Code
+      console.log('\n2️⃣ Generating PDF417 Code...');
+      const pdf417Code = await this.client.generatePDF417Code(
+        zoi,
+        issueDateTime,
+        CodeFormat.BUFFER
+      );
+      console.log('   ✅ PDF417 Code generated');
+      console.log('   - Format:', pdf417Code.format);
+      console.log('   - Buffer size:', (pdf417Code.data as Buffer).length, 'bytes');
+
+      // Test 3: Generate Code128 Barcodes
+      console.log('\n3️⃣ Generating Code128 Barcodes...');
+      const code128 = await this.client.generateCode128(
+        zoi,
+        issueDateTime,
+        CodeFormat.STRINGS,
+        3
+      );
+      console.log('   ✅ Code128 Barcodes generated');
+      console.log('   - Format:', code128.format);
+      const strings = code128.data as string[];
+      strings.forEach((str, i) => {
+        console.log(`   - Part ${i + 1}: ${str}`);
+      });
+
+      // Test 4: Generate all codes at once
+      console.log('\n4️⃣ Generating all codes at once...');
+      const allCodes = await this.client.generateAllCodes(
+        zoi,
+        issueDateTime,
+        CodeFormat.DATA_URL
+      );
+      console.log('   ✅ All codes generated');
+      console.log('   - QR:', allCodes.qr.type, '-', allCodes.qr.format);
+      console.log('   - PDF417:', allCodes.pdf417.type, '-', allCodes.pdf417.format);
+      console.log('   - Code128:', allCodes.code128.type, '-', allCodes.code128.format);
+
+      // Test 5: Generate and save PDF codes to files
+      console.log('\n5️⃣ Generating and saving codes to files...');
+      const outputDir = path.join(__dirname, '../../test-output');
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+      }
+
+      // Save QR code
+      const qrPath = path.join(outputDir, 'test-qr.png');
+      await this.client.generateQRCode(
+        zoi,
+        issueDateTime,
+        CodeFormat.FILE,
+        qrPath
+      );
+      console.log('   ✅ QR code saved to:', qrPath);
+
+      // Save PDF417 code
+      const pdf417Path = path.join(outputDir, 'test-pdf417.png');
+      await this.client.generatePDF417Code(
+        zoi,
+        issueDateTime,
+        CodeFormat.FILE,
+        pdf417Path
+      );
+      console.log('   ✅ PDF417 code saved to:', pdf417Path);
+
+      // Save Code128 barcodes
+      const code128Path = path.join(outputDir, 'test-code128.png');
+      await this.client.generateCode128(
+        zoi,
+        issueDateTime,
+        CodeFormat.FILE,
+        3,
+        code128Path
+      );
+      console.log('   ✅ Code128 barcodes saved to:', code128Path);
+
+      // Test 6: Fiscalize with codes
+      console.log('\n6️⃣ Testing fiscalizeInvoiceWithCodes...');
+      if (lastData) {
+        // Create a new invoice to avoid duplicate error
+        const newInvoiceData = {
+          ...lastData,
+          invoiceNumber: undefined // Let it generate a new one
+        };
+
+        const resultWithCodes = await this.client.fiscalizeInvoiceWithCodes(
+          newInvoiceData,
+          true,
+          CodeFormat.DATA_URL
+        );
+
+        console.log('   ✅ Invoice fiscalized with codes');
+        console.log('   - Invoice number:', resultWithCodes.invoiceNumber);
+        console.log('   - Has codes:', resultWithCodes.codes ? 'Yes' : 'No');
+        if (resultWithCodes.codes) {
+          console.log('   - QR code data length:', (resultWithCodes.codes.qr.data as string).length);
+          console.log('   - PDF417 data length:', (resultWithCodes.codes.pdf417.data as string).length);
+          console.log('   - Code128 data length:', (resultWithCodes.codes.code128.data as string).length);
+        }
+      }
+
+      this.testResults.set('codeGeneration', true);
+    } catch (error) {
+      console.log('❌ Code generation failed:', (error as Error).message);
+      this.testResults.set('codeGeneration', false);
+    }
+    console.log();
+  }
+  /**
+   * Test 5: Error Handling with TypeScript error types
    */
   private async testErrorHandling(): Promise<void> {
-    console.log('🛡️  TEST 4: Error Handling & Type Safety');
+    console.log('🛡️  TEST 5: Error Handling & Type Safety');
     console.log('========================================');
     
     try {
@@ -242,7 +390,7 @@ class FursIntegrationTest {
    * Test 5: TypeScript Type Validation
    */
   private async testTypeValidation(): Promise<void> {
-    console.log('🔍 TEST 5: TypeScript Type System Validation');
+    console.log('🔍 TEST 6: TypeScript Type System Validation');
     console.log('===========================================');
     
     try {
