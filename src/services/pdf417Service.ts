@@ -31,7 +31,7 @@ const DEFAULT_PDF417_OPTIONS: FursPDF417Options = {
   moduleWidth: 2,
   moduleHeight: 10,
   rows: 10,
-  quietZone: 2
+  quietZone: 2,
 };
 
 /**
@@ -55,13 +55,13 @@ export async function generatePDF417Buffer(
     // Generate PDF417 using bwip-js
     // Use pdf417compact for more efficient encoding
     const png = await bwipjs.toBuffer({
-      bcid: 'pdf417compact',  // Compact version is more suitable for numeric data
+      bcid: 'pdf417compact', // Compact version is more suitable for numeric data
       text: codeData,
-      scale: pdf417Options.moduleWidth || 2,  // Module width in pixels
-      height: pdf417Options.moduleHeight || 10,  // Row height in scale units
-      eclevel: pdf417Options.errorCorrectionLevel || 2,  // Error correction level (0-8, FURS requires 2)
-      includetext: false,  // Don't include human-readable text
-      padding: pdf417Options.quietZone || 2  // Quiet zone around barcode
+      scale: pdf417Options.moduleWidth || 2, // Module width in pixels
+      height: pdf417Options.moduleHeight || 10, // Row height in scale units
+      eclevel: pdf417Options.errorCorrectionLevel || 2, // Error correction level (0-8, FURS requires 2)
+      includetext: false, // Don't include human-readable text
+      padding: pdf417Options.quietZone || 2, // Quiet zone around barcode
     });
 
     return png;
@@ -150,13 +150,13 @@ export async function generatePDF417SVG(
   try {
     // Generate PDF417 SVG using bwip-js
     const svg = await bwipjs.toSVG({
-      bcid: 'pdf417compact',  // Compact version is more suitable for numeric data
+      bcid: 'pdf417compact', // Compact version is more suitable for numeric data
       text: codeData,
       scale: pdf417Options.moduleWidth || 2,
       height: pdf417Options.moduleHeight || 10,
       eclevel: pdf417Options.errorCorrectionLevel || 2,
       includetext: false,
-      padding: pdf417Options.quietZone || 2
+      padding: pdf417Options.quietZone || 2,
     });
 
     return svg;
@@ -191,7 +191,7 @@ function generatePDF417SVGFallback(
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="${totalHeight}" viewBox="0 0 ${totalWidth} ${totalHeight}">`;
   svg += `<rect width="${totalWidth}" height="${totalHeight}" fill="white"/>`;
-  svg += `<text x="10" y="${totalHeight/2}" font-family="monospace" font-size="12">PDF417: ${codeData.substring(0, 20)}...</text>`;
+  svg += `<text x="10" y="${totalHeight / 2}" font-family="monospace" font-size="12">PDF417: ${codeData.substring(0, 20)}...</text>`;
   svg += '</svg>';
   return svg;
 }

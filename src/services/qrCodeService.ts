@@ -27,7 +27,7 @@ const DEFAULT_QR_OPTIONS: FursQRCodeOptions = {
   errorCorrectionLevel: 'M',
   moduleSize: 4,
   margin: 4,
-  size: 12
+  size: 12,
 };
 
 /**
@@ -51,7 +51,7 @@ export async function generateQRCodeDataURL(
     errorCorrectionLevel: qrOptions.errorCorrectionLevel || 'M',
     margin: qrOptions.margin,
     width: 25 * (qrOptions.moduleSize || 4), // 25x25 modules
-    type: 'image/png'
+    type: 'image/png',
   };
 
   return await QRCode.toDataURL(codeData, qrCodeOptions);
@@ -78,7 +78,7 @@ export async function generateQRCodeBuffer(
     errorCorrectionLevel: qrOptions.errorCorrectionLevel || 'M',
     margin: qrOptions.margin,
     width: 25 * (qrOptions.moduleSize || 4), // 25x25 modules
-    type: 'png'
+    type: 'png',
   };
 
   return await QRCode.toBuffer(codeData, qrCodeOptions);
@@ -105,7 +105,7 @@ export async function generateQRCodeSVG(
     errorCorrectionLevel: qrOptions.errorCorrectionLevel || 'M',
     margin: qrOptions.margin,
     width: 25 * (qrOptions.moduleSize || 4), // 25x25 modules
-    type: 'svg'
+    type: 'svg',
   };
 
   return await QRCode.toString(codeData, qrCodeOptions);
@@ -133,7 +133,7 @@ export async function generateQRCodeToFile(
     errorCorrectionLevel: qrOptions.errorCorrectionLevel || 'M',
     margin: qrOptions.margin,
     width: 25 * (qrOptions.moduleSize || 4), // 25x25 modules
-    type: 'png'
+    type: 'png',
   };
 
   await QRCode.toFile(filePath, codeData, qrCodeOptions);
@@ -155,6 +155,6 @@ export async function generateQRCodeTerminal(
 
   return await QRCode.toString(codeData, {
     type: 'terminal',
-    errorCorrectionLevel: 'M'
+    errorCorrectionLevel: 'M',
   });
 }

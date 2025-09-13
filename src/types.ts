@@ -11,7 +11,7 @@ export interface FursClientConfig {
   /** Tax number */
   taxNumber: number;
   /** Environment (test or production) */
-  environment?: "test" | "production";
+  environment?: 'test' | 'production';
   /** Custom endpoints configuration */
   endpoints?: Partial<FursEndpoints>;
   /** Enable debug logging */
@@ -69,7 +69,7 @@ export interface RealEstateBP {
 
 export interface PremiseType {
   /** Premise type code */
-  PremiseType: "A" | "B" | "C";
+  PremiseType: 'A' | 'B' | 'C';
 }
 
 export interface BusinessPremiseIdentifier {
@@ -134,7 +134,7 @@ export interface InvoiceRequest {
   taxesPerSeller: TaxesPerSeller[] /** Issue date/time in ISO format */;
   issueDateTime?: string;
   /** Numbering structure */
-  numberingStructure?: "B" | "C";
+  numberingStructure?: 'B' | 'C';
   /** Operator tax number */
   operatorTaxNumber?: number;
 }
@@ -188,16 +188,16 @@ export interface FursResponse {
 
 // Environment constants
 export const ENVIRONMENTS = {
-  TEST: "test" as const,
-  PRODUCTION: "production" as const,
+  TEST: 'test' as const,
+  PRODUCTION: 'production' as const,
 } as const;
 
 export type Environment = (typeof ENVIRONMENTS)[keyof typeof ENVIRONMENTS];
 
 // Error code types
 export type FursErrorCode =
-  | "VALIDATION_ERROR"
-  | "AUTHENTICATION_ERROR"
-  | "NETWORK_ERROR"
-  | "SERVER_ERROR"
+  | 'VALIDATION_ERROR'
+  | 'AUTHENTICATION_ERROR'
+  | 'NETWORK_ERROR'
+  | 'SERVER_ERROR'
   | string;

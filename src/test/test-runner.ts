@@ -13,7 +13,7 @@ class TypeScriptTestRunner {
     integration: boolean;
   } = {
     unit: false,
-    integration: false
+    integration: false,
   };
 
   constructor() {
@@ -32,13 +32,12 @@ class TypeScriptTestRunner {
     try {
       // Phase 1: Unit Tests
       await this.runUnitTestPhase();
-      
+
       // Phase 2: Integration Tests
       await this.runIntegrationTestPhase();
-      
+
       // Final Report
       this.generateFinalReport();
-      
     } catch (error) {
       this.handleTestSuiteError(error as Error);
     }
@@ -50,7 +49,7 @@ class TypeScriptTestRunner {
   private async runUnitTestPhase(): Promise<void> {
     console.log('🔧 PHASE 1: UNIT TESTS');
     console.log('======================\n');
-    
+
     try {
       await runTypeScriptUnitTests();
       this.testResults.unit = true;
@@ -67,7 +66,7 @@ class TypeScriptTestRunner {
   private async runIntegrationTestPhase(): Promise<void> {
     console.log('🌐 PHASE 2: INTEGRATION TESTS');
     console.log('=============================\n');
-    
+
     try {
       await runTypeScriptTests();
       this.testResults.integration = true;
@@ -90,18 +89,22 @@ class TypeScriptTestRunner {
     console.log('='.repeat(80));
     console.log('🏆 COMPLETE TYPESCRIPT TEST SUITE RESULTS');
     console.log('='.repeat(80));
-    
+
     console.log('📊 Test Phase Results:');
-    console.log(`   ${this.testResults.unit ? '✅' : '❌'} Unit Tests: ${this.testResults.unit ? 'PASSED' : 'FAILED'}`);
-    console.log(`   ${this.testResults.integration ? '✅' : '❌'} Integration Tests: ${this.testResults.integration ? 'PASSED' : 'FAILED'}`);
-    
+    console.log(
+      `   ${this.testResults.unit ? '✅' : '❌'} Unit Tests: ${this.testResults.unit ? 'PASSED' : 'FAILED'}`
+    );
+    console.log(
+      `   ${this.testResults.integration ? '✅' : '❌'} Integration Tests: ${this.testResults.integration ? 'PASSED' : 'FAILED'}`
+    );
+
     console.log('\n⏱️  Execution Details:');
     console.log(`   Started: ${this.startTime.toLocaleString()}`);
     console.log(`   Completed: ${endTime.toLocaleString()}`);
     console.log(`   Duration: ${durationSeconds} seconds`);
-    
+
     const allTestsPassed = this.testResults.unit && this.testResults.integration;
-    
+
     if (allTestsPassed) {
       console.log('\n🎉 ALL TYPESCRIPT TESTS PASSED SUCCESSFULLY!');
       console.log('\n✅ What was validated:');
@@ -117,7 +120,7 @@ class TypeScriptTestRunner {
       console.log('      - Invoice fiscalization with type safety');
       console.log('      - Error handling with typed exceptions');
       console.log('      - Complete TypeScript type system validation');
-      
+
       console.log('\n🚀 Production Readiness Confirmed:');
       console.log('   ✅ TypeScript compilation successful');
       console.log('   ✅ Type safety verified at compile time');
@@ -125,13 +128,12 @@ class TypeScriptTestRunner {
       console.log('   ✅ FURS API integration working correctly');
       console.log('   ✅ Certificate authentication functional');
       console.log('   ✅ All business logic properly typed');
-      
+
       console.log('\n📝 Your FURS TypeScript client is ready for:');
       console.log('   - Production deployment');
       console.log('   - Integration into TypeScript projects');
       console.log('   - Full IntelliSense support in IDEs');
       console.log('   - Compile-time error prevention');
-      
     } else {
       console.log('\n⚠️  SOME TESTS FAILED');
       console.log('\n❌ Failed Test Phases:');
@@ -141,7 +143,7 @@ class TypeScriptTestRunner {
       if (!this.testResults.integration) {
         console.log('   - Integration Tests: API communication or authentication issues');
       }
-      
+
       console.log('\n🔧 Recommended Actions:');
       console.log('   1. Review test output for specific error details');
       console.log('   2. Verify certificate file and credentials');
@@ -149,7 +151,7 @@ class TypeScriptTestRunner {
       console.log('   4. Ensure all TypeScript types are properly defined');
       console.log('   5. Run individual test phases for more detailed debugging');
     }
-    
+
     console.log('='.repeat(80));
   }
 
@@ -161,23 +163,25 @@ class TypeScriptTestRunner {
     console.log('================================================');
     console.log('Error Type:', error.constructor.name);
     console.log('Error Message:', error.message);
-    
+
     console.log('\n📊 Test Results Before Failure:');
     console.log(`   Unit Tests: ${this.testResults.unit ? 'COMPLETED' : 'FAILED/INCOMPLETE'}`);
-    console.log(`   Integration Tests: ${this.testResults.integration ? 'COMPLETED' : 'FAILED/INCOMPLETE'}`);
-    
+    console.log(
+      `   Integration Tests: ${this.testResults.integration ? 'COMPLETED' : 'FAILED/INCOMPLETE'}`
+    );
+
     console.log('\n🔧 Debugging Steps:');
     console.log('   1. Check TypeScript compilation: npm run build');
     console.log('   2. Run unit tests separately: npm run test:unit');
     console.log('   3. Verify certificate and credentials');
     console.log('   4. Check network connectivity');
     console.log('   5. Review error details above');
-    
+
     if (error.stack) {
       console.log('\n📋 Stack Trace:');
       console.log(error.stack);
     }
-    
+
     process.exit(1);
   }
 }
@@ -192,7 +196,7 @@ async function runCompleteTypeScriptTestSuite(): Promise<void> {
 
 // Execute complete test suite if run directly
 if (require.main === module) {
-  runCompleteTypeScriptTestSuite().catch(error => {
+  runCompleteTypeScriptTestSuite().catch((error) => {
     console.error('💥 Fatal Error in TypeScript Test Suite:', error.message);
     process.exit(1);
   });

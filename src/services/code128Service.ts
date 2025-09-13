@@ -34,7 +34,7 @@ const DEFAULT_CODE128_OPTIONS: FursCode128Options = {
   height: 35, // 3.5mm in pixels (assuming 10 pixels per mm)
   quietZone: 20, // 10 modules * 2 pixels per module
   spacing: 10, // 1mm in pixels
-  displayValue: true
+  displayValue: true,
 };
 
 /**
@@ -43,10 +43,7 @@ const DEFAULT_CODE128_OPTIONS: FursCode128Options = {
  * @param options - Barcode options
  * @returns Canvas with the barcode
  */
-function generateSingleCode128(
-  data: string,
-  options: FursCode128Options
-): any {
+function generateSingleCode128(data: string, options: FursCode128Options): any {
   const canvas = createCanvas(1, 1); // Will be resized by JsBarcode
 
   JsBarcode(canvas, data, {
@@ -56,7 +53,7 @@ function generateSingleCode128(
     margin: options.quietZone || 20,
     displayValue: options.displayValue !== false,
     fontSize: 12,
-    textMargin: 2
+    textMargin: 2,
   });
 
   return canvas;
@@ -84,13 +81,13 @@ export async function generateCode128Buffer(
   const splitData = splitForCode128(codeData, parts);
 
   // Generate individual barcodes
-  const barcodes = splitData.map(data => generateSingleCode128(data, code128Options));
+  const barcodes = splitData.map((data) => generateSingleCode128(data, code128Options));
 
   // Calculate total canvas size
   const barcodeWidth = Math.max(...barcodes.map((bc: any) => bc.width));
   const barcodeHeight = barcodes[0].height;
   const spacing = code128Options.spacing || 10;
-  const totalHeight = (barcodeHeight * parts) + (spacing * (parts - 1));
+  const totalHeight = barcodeHeight * parts + spacing * (parts - 1);
 
   // Create combined canvas
   const finalCanvas = createCanvas(barcodeWidth, totalHeight);
@@ -156,7 +153,7 @@ export function generateCode128SVG(
 
   // Calculate dimensions
   const barcodeWidth = 400; // Approximate width
-  const totalHeight = (height * parts) + (spacing * (parts - 1));
+  const totalHeight = height * parts + spacing * (parts - 1);
 
   let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${barcodeWidth}" height="${totalHeight}" viewBox="0 0 ${barcodeWidth} ${totalHeight}">`;
   svg += `<rect width="${barcodeWidth}" height="${totalHeight}" fill="white"/>`;

@@ -9,7 +9,7 @@ import {
   generateQRCodeSVG,
   generateQRCodeToFile,
   generateQRCodeTerminal,
-  FursQRCodeOptions
+  FursQRCodeOptions,
 } from './qrCodeService';
 
 import {
@@ -17,7 +17,7 @@ import {
   generatePDF417DataURL,
   generatePDF417SVG,
   generatePDF417ToFile,
-  FursPDF417Options
+  FursPDF417Options,
 } from './pdf417Service';
 
 import {
@@ -26,7 +26,7 @@ import {
   generateCode128SVG,
   generateCode128ToFile,
   getCode128Strings,
-  FursCode128Options
+  FursCode128Options,
 } from './code128Service';
 
 import {
@@ -35,7 +35,7 @@ import {
   formatDateForCode,
   calculateControlCharacter,
   validateZOI,
-  validateTaxNumber
+  validateTaxNumber,
 } from '../utils/codeFormatter';
 
 /**
@@ -44,7 +44,7 @@ import {
 export enum CodeType {
   QR = 'QR',
   PDF417 = 'PDF417',
-  CODE128 = 'CODE128'
+  CODE128 = 'CODE128',
 }
 
 /**
@@ -56,7 +56,7 @@ export enum CodeFormat {
   SVG = 'svg',
   FILE = 'file',
   TERMINAL = 'terminal',
-  STRINGS = 'strings'
+  STRINGS = 'strings',
 }
 
 /**
@@ -144,9 +144,7 @@ export class FursCodeGenerator {
     const zoiDecimal = hexToDecimalPadded(invoiceData.zoi);
     const taxNumberStr = invoiceData.taxNumber.toString().padStart(8, '0');
     const dateTimeStr = formatDateForCode(invoiceData.issueDateTime);
-    const controlChar = calculateControlCharacter(
-      zoiDecimal + taxNumberStr + dateTimeStr
-    );
+    const controlChar = calculateControlCharacter(zoiDecimal + taxNumberStr + dateTimeStr);
 
     // Generate the code based on type and format
     let data: Buffer | string | string[];
@@ -174,8 +172,8 @@ export class FursCodeGenerator {
         zoiDecimal,
         taxNumber: taxNumberStr,
         dateTime: dateTimeStr,
-        controlCharacter: controlChar
-      }
+        controlCharacter: controlChar,
+      },
     };
   }
 
@@ -258,7 +256,13 @@ export class FursCodeGenerator {
         if (!options.filePath) {
           throw new Error('File path is required for FILE format');
         }
-        await generateCode128ToFile(options.filePath, zoi, taxNumber, issueDateTime, code128Options);
+        await generateCode128ToFile(
+          options.filePath,
+          zoi,
+          taxNumber,
+          issueDateTime,
+          code128Options
+        );
         return `File saved to: ${options.filePath}`;
       case CodeFormat.STRINGS:
         return getCode128Strings(zoi, taxNumber, issueDateTime, code128Options.parts || 3);
@@ -284,7 +288,7 @@ export class FursCodeGenerator {
     const [qr, pdf417, code128] = await Promise.all([
       this.generateCode(invoiceData, { type: CodeType.QR, format }),
       this.generateCode(invoiceData, { type: CodeType.PDF417, format }),
-      this.generateCode(invoiceData, { type: CodeType.CODE128, format })
+      this.generateCode(invoiceData, { type: CodeType.CODE128, format }),
     ]);
 
     return { qr, pdf417, code128 };
@@ -306,9 +310,10 @@ export class FursCodeGenerator {
 
     try {
       // Validate date
-      const date = typeof invoiceData.issueDateTime === 'string'
-        ? new Date(invoiceData.issueDateTime)
-        : invoiceData.issueDateTime;
+      const date =
+        typeof invoiceData.issueDateTime === 'string'
+          ? new Date(invoiceData.issueDateTime)
+          : invoiceData.issueDateTime;
 
       if (isNaN(date.getTime())) {
         throw new Error('Invalid date');
@@ -332,5 +337,5 @@ export {
   calculateControlCharacter,
   splitForCode128,
   validateZOI,
-  validateTaxNumber
+  validateTaxNumber,
 } from '../utils/codeFormatter';

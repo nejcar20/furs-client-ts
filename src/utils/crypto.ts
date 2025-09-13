@@ -30,12 +30,10 @@ export function generateZOI(
   invoiceNumber: string,
   businessPremiseId: string,
   electronicDeviceId: string,
-  totalAmount: number,
-): string {  // Format datetime for ZOI (YYYY-MM-DD HH:MM:SS)
-  const formattedDateTime = new Date(issueDateTime)
-    .toISOString()
-    .slice(0, 19)
-    .replace('T', ' ');
+  totalAmount: number
+): string {
+  // Format datetime for ZOI (YYYY-MM-DD HH:MM:SS)
+  const formattedDateTime = new Date(issueDateTime).toISOString().slice(0, 19).replace('T', ' ');
 
   // Create ZOI input string
   const zoiInput = `${taxNumber}${formattedDateTime}${invoiceNumber}${businessPremiseId}${electronicDeviceId}${totalAmount.toFixed(2)}`;
@@ -47,10 +45,7 @@ export function generateZOI(
 
   // Create MD5 hash of signature
   const signatureBuffer = Buffer.from(signature, 'binary');
-  const md5Hash = crypto
-    .createHash('md5')
-    .update(signatureBuffer)
-    .digest('hex');
+  const md5Hash = crypto.createHash('md5').update(signatureBuffer).digest('hex');
 
   return md5Hash;
 }
@@ -64,7 +59,7 @@ export function validateTaxNumber(taxNumber: number): boolean {
   if (typeof taxNumber !== 'number') {
     return false;
   }
-  
+
   const taxStr = taxNumber.toString();
   return /^\d{8}$/.test(taxStr);
 }

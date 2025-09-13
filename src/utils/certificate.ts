@@ -7,7 +7,10 @@ import { CertificateInfo } from '../types';
  * @param password - Certificate password
  * @returns Certificate information and private key
  */
-export function loadCertificate(certData: Buffer, password: string): {
+export function loadCertificate(
+  certData: Buffer,
+  password: string
+): {
   privateKey: forge.pki.PrivateKey;
   certificateInfo: CertificateInfo;
   certificateCount: number;
@@ -38,14 +41,14 @@ export function loadCertificate(certData: Buffer, password: string): {
       throw new Error('No private key found in certificate bag');
     }
     const privateKey = privateKeyBag.key;
-    
+
     // Get certificate information
     const certificateInfo = getCertificateInfo(certBag);
 
     return {
       privateKey,
       certificateInfo,
-      certificateCount: certBag.length
+      certificateCount: certBag.length,
     };
   } catch (error: any) {
     throw new Error(`Failed to load certificate: ${error.message}`);
@@ -65,7 +68,7 @@ export function getCertificateInfo(certBags: forge.pkcs12.Bag[]): CertificateInf
   const subjectParts: string[] = [];
 
   // 1. CN (Common Name) - with proper escaping
-  const cn = subjectAttrs.find(attr => attr.shortName === 'CN' || attr.type === '2.5.4.3');
+  const cn = subjectAttrs.find((attr) => attr.shortName === 'CN' || attr.type === '2.5.4.3');
   if (cn) {
     const cnValue = cn.value;
     if (typeof cnValue === 'string' && cnValue.includes(',')) {
@@ -76,15 +79,17 @@ export function getCertificateInfo(certBags: forge.pkcs12.Bag[]): CertificateInf
   }
 
   // 2. OID 2.5.4.5 (serialNumber) - FURS expects simple decimal value
-  const serialAttr = subjectAttrs.find(attr => attr.type === '2.5.4.5');
+  const serialAttr = subjectAttrs.find((attr) => attr.type === '2.5.4.5');
   if (serialAttr) {
     subjectParts.push(`2.5.4.5=#1`);
   }
 
   // 3. OU attributes in FURS specific order
-  const ouAttrs = subjectAttrs.filter(attr => attr.shortName === 'OU' || attr.type === '2.5.4.11');
-  const davPotRac = ouAttrs.find(ou => ou.value === 'DavPotRacTEST');
-  const taxNumber = ouAttrs.find(ou => typeof ou.value === 'string' && /^\d+$/.test(ou.value));
+  const ouAttrs = subjectAttrs.filter(
+    (attr) => attr.shortName === 'OU' || attr.type === '2.5.4.11'
+  );
+  const davPotRac = ouAttrs.find((ou) => ou.value === 'DavPotRacTEST');
+  const taxNumber = ouAttrs.find((ou) => typeof ou.value === 'string' && /^\d+$/.test(ou.value));
 
   if (davPotRac) {
     subjectParts.push(`OU=${davPotRac.value}`);
@@ -94,13 +99,13 @@ export function getCertificateInfo(certBags: forge.pkcs12.Bag[]): CertificateInf
   }
 
   // 4. O (Organization)
-  const o = subjectAttrs.find(attr => attr.shortName === 'O' || attr.type === '2.5.4.10');
+  const o = subjectAttrs.find((attr) => attr.shortName === 'O' || attr.type === '2.5.4.10');
   if (o) {
     subjectParts.push(`O=${o.value}`);
   }
 
   // 5. C (Country)
-  const c = subjectAttrs.find(attr => attr.shortName === 'C' || attr.type === '2.5.4.6');
+  const c = subjectAttrs.find((attr) => attr.shortName === 'C' || attr.type === '2.5.4.6');
   if (c) {
     subjectParts.push(`C=${c.value}`);
   }
@@ -110,17 +115,17 @@ export function getCertificateInfo(certBags: forge.pkcs12.Bag[]): CertificateInf
   const issuerAttrs = cert.issuer.attributes;
   const issuerParts: string[] = [];
 
-  const issuerCn = issuerAttrs.find(attr => attr.shortName === 'CN' || attr.type === '2.5.4.3');
+  const issuerCn = issuerAttrs.find((attr) => attr.shortName === 'CN' || attr.type === '2.5.4.3');
   if (issuerCn) {
     issuerParts.push(`CN=${issuerCn.value}`);
   }
 
-  const issuerO = issuerAttrs.find(attr => attr.shortName === 'O' || attr.type === '2.5.4.10');
+  const issuerO = issuerAttrs.find((attr) => attr.shortName === 'O' || attr.type === '2.5.4.10');
   if (issuerO) {
     issuerParts.push(`O=${issuerO.value}`);
   }
 
-  const issuerC = issuerAttrs.find(attr => attr.shortName === 'C' || attr.type === '2.5.4.6');
+  const issuerC = issuerAttrs.find((attr) => attr.shortName === 'C' || attr.type === '2.5.4.6');
   if (issuerC) {
     issuerParts.push(`C=${issuerC.value}`);
   }
@@ -137,6 +142,6 @@ export function getCertificateInfo(certBags: forge.pkcs12.Bag[]): CertificateInf
     issuer_name: issuer,
     serial: serialDecimal,
     validFrom: cert.validity.notBefore,
-    validTo: cert.validity.notAfter
+    validTo: cert.validity.notAfter,
   };
 }

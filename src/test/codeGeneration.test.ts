@@ -10,14 +10,14 @@ import {
   calculateControlCharacter,
   splitForCode128,
   validateZOI,
-  validateTaxNumber
+  validateTaxNumber,
 } from '../utils/codeFormatter';
 
 import {
   FursCodeGenerator,
   CodeType,
   CodeFormat,
-  InvoiceCodeData
+  InvoiceCodeData,
 } from '../services/codeGenerator';
 
 // Test data from FURS specification
@@ -27,7 +27,7 @@ const TEST_DATA_1 = {
   issueDateTime: new Date('2015-08-15T10:13:32'),
   expectedDecimal: '223175087923687075112234402528973166755',
   expectedFormatted: '223175087923687075112234402528973166755123456781508151013321',
-  expectedControl: '1'
+  expectedControl: '1',
 };
 
 const TEST_DATA_2 = {
@@ -36,7 +36,7 @@ const TEST_DATA_2 = {
   issueDateTime: new Date('2015-08-15T10:13:32'),
   expectedDecimal: '063994519708649896901260100447252359443',
   expectedFormatted: '063994519708649896901260100447252359443123456781508151013320',
-  expectedControl: '0'
+  expectedControl: '0',
 };
 
 /**
@@ -83,9 +83,7 @@ function testControlCharacter(): void {
   console.log('\n🔢 Testing Control Character Calculation:');
 
   // Test case 1
-  const data1 = TEST_DATA_1.expectedDecimal +
-                TEST_DATA_1.taxNumber.toString() +
-                '150815101332';
+  const data1 = TEST_DATA_1.expectedDecimal + TEST_DATA_1.taxNumber.toString() + '150815101332';
   const control1 = calculateControlCharacter(data1);
   console.log(`  Data length: ${data1.length}`);
   console.log(`  Expected control: ${TEST_DATA_1.expectedControl}`);
@@ -93,9 +91,7 @@ function testControlCharacter(): void {
   console.log(`  ✅ Test 1: ${control1 === TEST_DATA_1.expectedControl ? 'PASSED' : 'FAILED'}`);
 
   // Test case 2
-  const data2 = TEST_DATA_2.expectedDecimal +
-                TEST_DATA_2.taxNumber.toString() +
-                '150815101332';
+  const data2 = TEST_DATA_2.expectedDecimal + TEST_DATA_2.taxNumber.toString() + '150815101332';
   const control2 = calculateControlCharacter(data2);
   console.log(`\n  Data length: ${data2.length}`);
   console.log(`  Expected control: ${TEST_DATA_2.expectedControl}`);
@@ -184,7 +180,9 @@ function testValidation(): void {
   console.log('\n  Tax Number Validation:');
   console.log(`    Valid (12345678): ${validateTaxNumber(12345678) ? '✅ PASSED' : '❌ FAILED'}`);
   console.log(`    Invalid (123):    ${!validateTaxNumber(123) ? '✅ PASSED' : '❌ FAILED'}`);
-  console.log(`    Invalid (123456789): ${!validateTaxNumber(123456789) ? '✅ PASSED' : '❌ FAILED'}`);
+  console.log(
+    `    Invalid (123456789): ${!validateTaxNumber(123456789) ? '✅ PASSED' : '❌ FAILED'}`
+  );
 }
 
 /**
@@ -197,14 +195,14 @@ async function testCodeGeneration(): Promise<void> {
   const invoiceData: InvoiceCodeData = {
     zoi: TEST_DATA_1.zoi,
     taxNumber: TEST_DATA_1.taxNumber,
-    issueDateTime: TEST_DATA_1.issueDateTime
+    issueDateTime: TEST_DATA_1.issueDateTime,
   };
 
   try {
     // Test QR code generation
     const qrResult = await generator.generateCode(invoiceData, {
       type: CodeType.QR,
-      format: CodeFormat.TERMINAL
+      format: CodeFormat.TERMINAL,
     });
     console.log('\n  QR Code Generation:');
     console.log(`    Type: ${qrResult.type}`);
@@ -215,7 +213,7 @@ async function testCodeGeneration(): Promise<void> {
     // Test PDF417 generation
     const pdf417Result = await generator.generateCode(invoiceData, {
       type: CodeType.PDF417,
-      format: CodeFormat.SVG
+      format: CodeFormat.SVG,
     });
     console.log('\n  PDF417 Generation:');
     console.log(`    Type: ${pdf417Result.type}`);
@@ -226,7 +224,7 @@ async function testCodeGeneration(): Promise<void> {
     // Test Code128 generation
     const code128Result = await generator.generateCode(invoiceData, {
       type: CodeType.CODE128,
-      format: CodeFormat.STRINGS
+      format: CodeFormat.STRINGS,
     });
     console.log('\n  Code128 Generation:');
     console.log(`    Type: ${code128Result.type}`);
@@ -237,7 +235,6 @@ async function testCodeGeneration(): Promise<void> {
     // Display the terminal QR code
     console.log('\n  Generated QR Code (Terminal):');
     console.log(qrResult.data);
-
   } catch (error: any) {
     console.error(`  ❌ Code generation failed: ${error.message}`);
   }

@@ -9,7 +9,7 @@ export {
   FursValidationError,
   FursAuthenticationError,
   FursNetworkError,
-  FursServerError
+  FursServerError,
 } from './errors';
 
 export {
@@ -21,7 +21,7 @@ export {
   CertificateInfo,
   FursResponse,
   Environment,
-  ENVIRONMENTS
+  ENVIRONMENTS,
 } from './types';
 
 // Code generation exports
@@ -32,7 +32,7 @@ export {
   CodeGenerationResult,
   InvoiceCodeData,
   FursCodeGenerator,
-  codeGenerator
+  codeGenerator,
 } from './services/codeGenerator';
 
 export {
@@ -41,7 +41,7 @@ export {
   generateQRCodeDataURL,
   generateQRCodeSVG,
   generateQRCodeToFile,
-  generateQRCodeTerminal
+  generateQRCodeTerminal,
 } from './services/qrCodeService';
 
 export {
@@ -49,7 +49,7 @@ export {
   generatePDF417Buffer,
   generatePDF417DataURL,
   generatePDF417SVG,
-  generatePDF417ToFile
+  generatePDF417ToFile,
 } from './services/pdf417Service';
 
 export {
@@ -58,7 +58,7 @@ export {
   generateCode128DataURL,
   generateCode128SVG,
   generateCode128ToFile,
-  getCode128Strings
+  getCode128Strings,
 } from './services/code128Service';
 
 export {
@@ -68,7 +68,7 @@ export {
   calculateControlCharacter,
   splitForCode128,
   validateZOI,
-  validateTaxNumber as validateTaxNumberFormat
+  validateTaxNumber as validateTaxNumberFormat,
 } from './utils/codeFormatter';
 
 // Default export for CommonJS compatibility
