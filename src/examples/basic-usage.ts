@@ -19,7 +19,7 @@ async function main(): Promise<void> {
       certPassword: 'X5T7FCINH1AE',
       taxNumber: 10641025,
       environment: 'test', // or 'production'
-      debug: true
+      debug: true,
     });
 
     console.log('✅ Client initialized successfully\n');
@@ -35,7 +35,8 @@ async function main(): Promise<void> {
             CadastralNumber: 365,
             BuildingNumber: 12,
             BuildingSectionNumber: 3,
-          },          Address: {
+          },
+          Address: {
             Street: 'Tržaška cesta',
             HouseNumber: '24',
             HouseNumberAdditional: 'B',
@@ -46,7 +47,7 @@ async function main(): Promise<void> {
         },
       },
       validityDate: '2026-01-01T22:30:47',
-      specialNotes: 'Test business premise from TypeScript package'
+      specialNotes: 'Test business premise from TypeScript package',
     };
 
     const businessPremiseResult = await client.registerBusinessPremise(businessPremiseData);
@@ -57,7 +58,7 @@ async function main(): Promise<void> {
     }
 
     // Wait between requests
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Example 2: Fiscalize Invoice
     console.log('\n💳 FISCALIZING INVOICE');
@@ -69,7 +70,8 @@ async function main(): Promise<void> {
       invoiceAmount: 100.0,
       paymentAmount: 100.0,
       taxesPerSeller: [
-        {          VAT: [
+        {
+          VAT: [
             {
               TaxRate: 22.0,
               TaxableAmount: 81.97,
@@ -88,10 +90,9 @@ async function main(): Promise<void> {
       console.log('   EOR (Unique ID):', invoiceResult.uniqueInvoiceId);
       console.log('   ZOI:', invoiceResult.zoi);
     }
-
   } catch (error) {
     console.error('❌ Error:', (error as Error).message);
-    
+
     if (error instanceof FursValidationError) {
       console.error('   Type: Validation Error');
     } else if (error instanceof FursAuthenticationError) {
@@ -100,11 +101,11 @@ async function main(): Promise<void> {
       console.error('   Type: FURS Error');
       console.error('   Code:', error.code);
     }
-    
+
     if ((error as FursError).details) {
       console.error('   Details:', (error as FursError).details);
     }
-    
+
     process.exit(1);
   }
   console.log('\n' + '='.repeat(60));

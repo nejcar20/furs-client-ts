@@ -3,7 +3,7 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
+test-output
 # Build output
 dist/
 build/
@@ -113,3 +113,10 @@ Thumbs.db
 # Test files
 test-results/
 coverage/
+output/
+test-*.png
+test-*.svg
+verify-*.png
+verify-*.svg
+*.test.png
+*.test.svg

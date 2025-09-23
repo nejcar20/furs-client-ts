@@ -27,10 +27,7 @@ export function base64urlDecode(data: string): string {
   const padding = 4 - (data.length % 4);
   const paddedData = data + '='.repeat(padding % 4);
 
-  return Buffer.from(
-    paddedData.replace(/-/g, '+').replace(/_/g, '/'),
-    'base64',
-  ).toString('utf8');
+  return Buffer.from(paddedData.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
 }
 /**
  * Create JWT according to FURS specification
@@ -39,7 +36,11 @@ export function base64urlDecode(data: string): string {
  * @param certificateInfo - Certificate information
  * @returns JWT token
  */
-export function createJWT(payload: any, privateKey: forge.pki.PrivateKey, certificateInfo: CertificateInfo): string {
+export function createJWT(
+  payload: any,
+  privateKey: forge.pki.PrivateKey,
+  certificateInfo: CertificateInfo
+): string {
   // Create JWS Header according to FURS spec
   const header: JWTHeader = {
     alg: 'RS256',
@@ -101,12 +102,12 @@ export function decodeJWT(jwt: string): JWTDecoded {
       valid: true,
     };
   } catch (error: any) {
-    return { 
+    return {
       header: {} as JWTHeader,
       payload: {},
       signature: '',
-      valid: false, 
-      error: error.message 
+      valid: false,
+      error: error.message,
     };
   }
 }

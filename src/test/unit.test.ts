@@ -1,9 +1,9 @@
-import { 
-  FursError, 
-  FursValidationError, 
+import {
+  FursError,
+  FursValidationError,
   FursAuthenticationError,
   FursNetworkError,
-  FursServerError 
+  FursServerError,
 } from '../errors';
 import { generateId, validateTaxNumber, formatDateForFurs } from '../utils/crypto';
 import { base64urlEncode, base64urlDecode } from '../utils/jwt';
@@ -32,7 +32,7 @@ class FursUnitTest {
       this.testJwtUtilities();
       this.testTypeDefinitions();
       this.testValidationFunctions();
-      
+
       this.printTestSummary();
     } catch (error) {
       this.handleTestError(error as Error);
@@ -45,8 +45,9 @@ class FursUnitTest {
   private testErrorClasses(): void {
     console.log('🛡️  TEST 1: Error Classes & Type Safety');
     console.log('======================================');
-    
-    try {      // Test FursError base class
+
+    try {
+      // Test FursError base class
       const baseError = new FursError('Test error', 'TEST_CODE', { detail: 'test' });
       console.log('✅ FursError instantiation');
       console.log('   - Message type:', typeof baseError.message);
@@ -59,7 +60,10 @@ class FursUnitTest {
       const validationError = new FursValidationError('Validation failed', { field: 'taxNumber' });
       console.log('✅ FursValidationError inheritance');
       console.log('   - Instanceof FursError:', validationError instanceof FursError);
-      console.log('   - Instanceof FursValidationError:', validationError instanceof FursValidationError);
+      console.log(
+        '   - Instanceof FursValidationError:',
+        validationError instanceof FursValidationError
+      );
       console.log('   - Code value:', validationError.code);
 
       // Test FursAuthenticationError
@@ -90,13 +94,13 @@ class FursUnitTest {
   private testCryptoUtilities(): void {
     console.log('🔐 TEST 2: Crypto Utilities & Type Safety');
     console.log('=========================================');
-    
+
     try {
       // Test generateId function
       const id1: string = generateId('TEST');
       const id2: string = generateId('BP');
       const id3: string = generateId(); // No prefix
-      
+
       console.log('✅ generateId function');
       console.log('   - With prefix type check:', typeof id1 === 'string');
       console.log('   - Prefix included:', id1.startsWith('TEST'));
@@ -108,7 +112,7 @@ class FursUnitTest {
       const validTaxNumber: boolean = validateTaxNumber(12345678);
       const invalidTaxNumber: boolean = validateTaxNumber(123); // Too short
       const invalidType: boolean = validateTaxNumber('invalid' as any); // Wrong type
-      
+
       console.log('✅ validateTaxNumber function');
       console.log('   - Valid 8-digit number:', validTaxNumber === true);
       console.log('   - Invalid short number:', invalidTaxNumber === false);
@@ -118,7 +122,7 @@ class FursUnitTest {
       const testDate = new Date('2025-09-10T14:30:00.000Z');
       const formattedDate: string = formatDateForFurs(testDate);
       const defaultFormatted: string = formatDateForFurs(); // Current date
-      
+
       console.log('✅ formatDateForFurs function');
       console.log('   - Return type is string:', typeof formattedDate === 'string');
       console.log('   - Contains Z suffix:', formattedDate.endsWith('Z'));
@@ -138,25 +142,28 @@ class FursUnitTest {
   private testJwtUtilities(): void {
     console.log('🔑 TEST 3: JWT Utilities & Type Safety');
     console.log('======================================');
-    
+
     try {
       // Test base64urlEncode function
       const testString = 'Hello, TypeScript!';
       const testBuffer = Buffer.from('Buffer test');
-      
+
       const encodedString: string = base64urlEncode(testString);
       const encodedBuffer: string = base64urlEncode(testBuffer);
-      
+
       console.log('✅ base64urlEncode function');
       console.log('   - String encoding type:', typeof encodedString === 'string');
       console.log('   - Buffer encoding type:', typeof encodedBuffer === 'string');
       console.log('   - No padding characters:', !encodedString.includes('='));
-      console.log('   - URL-safe characters:', !encodedString.includes('+') && !encodedString.includes('/'));
+      console.log(
+        '   - URL-safe characters:',
+        !encodedString.includes('+') && !encodedString.includes('/')
+      );
       console.log('   - Sample encoded:', encodedString);
 
       // Test base64urlDecode function
       const decodedString: string = base64urlDecode(encodedString);
-      
+
       console.log('✅ base64urlDecode function');
       console.log('   - Return type is string:', typeof decodedString === 'string');
       console.log('   - Correctly decoded:', decodedString === testString);
@@ -165,7 +172,7 @@ class FursUnitTest {
       // Test with TypeScript strict null checks
       const emptyString: string = base64urlEncode('');
       const decodedEmpty: string = base64urlDecode(emptyString);
-      
+
       console.log('✅ Edge case handling');
       console.log('   - Empty string encoding:', typeof emptyString === 'string');
       console.log('   - Empty string decoding:', decodedEmpty === '');
@@ -183,7 +190,7 @@ class FursUnitTest {
   private testTypeDefinitions(): void {
     console.log('📋 TEST 4: Type Definitions & Constants');
     console.log('=======================================');
-    
+
     try {
       // Test ENVIRONMENTS constant
       console.log('✅ ENVIRONMENTS constant');
@@ -191,12 +198,15 @@ class FursUnitTest {
       console.log('   - PRODUCTION value:', ENVIRONMENTS.PRODUCTION);
       console.log('   - TEST type check:', typeof ENVIRONMENTS.TEST === 'string');
       console.log('   - PRODUCTION type check:', typeof ENVIRONMENTS.PRODUCTION === 'string');
-      console.log('   - Correct values:', ENVIRONMENTS.TEST === 'test' && ENVIRONMENTS.PRODUCTION === 'production');
+      console.log(
+        '   - Correct values:',
+        ENVIRONMENTS.TEST === 'test' && ENVIRONMENTS.PRODUCTION === 'production'
+      );
 
       // Test type narrowing
       const testEnv: 'test' | 'production' = ENVIRONMENTS.TEST;
       const prodEnv: 'test' | 'production' = ENVIRONMENTS.PRODUCTION;
-      
+
       console.log('✅ Type narrowing');
       console.log('   - Test env assignment successful:', testEnv === 'test');
       console.log('   - Prod env assignment successful:', prodEnv === 'production');
@@ -207,15 +217,19 @@ class FursUnitTest {
         certPassword: 'test123',
         taxNumber: 12345678,
         environment: 'test' as const,
-        debug: false
+        debug: false,
       };
-      
+
       console.log('✅ Interface compliance (compile-time)');
       console.log('   - Configuration structure valid');
-      console.log('   - All required fields present:', 
-        'certPath' in mockConfig && 'certPassword' in mockConfig && 'taxNumber' in mockConfig);
-      console.log('   - Optional fields handled correctly:', 
-        mockConfig.environment !== undefined && mockConfig.debug !== undefined);
+      console.log(
+        '   - All required fields present:',
+        'certPath' in mockConfig && 'certPassword' in mockConfig && 'taxNumber' in mockConfig
+      );
+      console.log(
+        '   - Optional fields handled correctly:',
+        mockConfig.environment !== undefined && mockConfig.debug !== undefined
+      );
 
       this.testResults.set('typeDefinitions', true);
     } catch (error) {
@@ -230,19 +244,19 @@ class FursUnitTest {
   private testValidationFunctions(): void {
     console.log('✔️  TEST 5: Validation Functions & Type Guards');
     console.log('=============================================');
-    
+
     try {
       // Test tax number validation with different types
       const validNumbers = [12345678, 87654321, 10641025];
       const invalidNumbers = [123, 1234567890, -12345678, 0];
-      
+
       console.log('✅ Tax number validation');
-      
+
       validNumbers.forEach((num, index) => {
         const isValid: boolean = validateTaxNumber(num);
         console.log(`   - Valid ${num}:`, isValid === true);
       });
-      
+
       invalidNumbers.forEach((num, index) => {
         const isValid: boolean = validateTaxNumber(num);
         console.log(`   - Invalid ${num}:`, isValid === false);
@@ -252,7 +266,7 @@ class FursUnitTest {
       // validateTaxNumber('12345678'); // Type error: string not assignable to number
       // validateTaxNumber(null); // Type error: null not assignable to number
       // validateTaxNumber(undefined); // Type error: undefined not assignable to number
-      
+
       console.log('✅ TypeScript type safety verified (compile-time)');
       console.log('   - Function only accepts number type');
       console.log('   - Invalid types rejected at compile time');
@@ -260,9 +274,12 @@ class FursUnitTest {
       // Test return type consistency
       const result1: boolean = validateTaxNumber(12345678);
       const result2: boolean = validateTaxNumber(123);
-      
+
       console.log('✅ Return type consistency');
-      console.log('   - Always returns boolean:', typeof result1 === 'boolean' && typeof result2 === 'boolean');
+      console.log(
+        '   - Always returns boolean:',
+        typeof result1 === 'boolean' && typeof result2 === 'boolean'
+      );
       console.log('   - No unexpected return values');
 
       this.testResults.set('validationFunctions', true);
@@ -279,23 +296,23 @@ class FursUnitTest {
     console.log('='.repeat(70));
     console.log('📊 TYPESCRIPT UNIT TEST RESULTS');
     console.log('='.repeat(70));
-    
+
     const results = Array.from(this.testResults.entries());
     const passedTests = results.filter(([, passed]) => passed).length;
     const totalTests = results.length;
-    
+
     results.forEach(([testName, passed]) => {
       const status = passed ? '✅ PASSED' : '❌ FAILED';
       const formattedName = testName
         .replace(/([A-Z])/g, ' $1')
         .toLowerCase()
-        .replace(/^./, str => str.toUpperCase());
+        .replace(/^./, (str) => str.toUpperCase());
       console.log(`${status} ${formattedName}`);
     });
-    
+
     console.log();
     console.log(`🎯 Unit Test Summary: ${passedTests}/${totalTests} tests passed`);
-    
+
     if (passedTests === totalTests) {
       console.log('🎉 ALL TYPESCRIPT UNIT TESTS PASSED!');
       console.log();
@@ -311,7 +328,7 @@ class FursUnitTest {
       console.log(`⚠️  ${totalTests - passedTests} unit test(s) failed`);
       console.log('Please review the failures above');
     }
-    
+
     console.log('='.repeat(70));
   }
 
@@ -324,7 +341,7 @@ class FursUnitTest {
     console.log('Error Type:', error.constructor.name);
     console.log('Error Message:', error.message);
     console.log('Stack Trace:', error.stack);
-    
+
     process.exit(1);
   }
 }
@@ -339,7 +356,7 @@ async function runTypeScriptUnitTests(): Promise<void> {
 
 // Execute tests if run directly
 if (require.main === module) {
-  runTypeScriptUnitTests().catch(error => {
+  runTypeScriptUnitTests().catch((error) => {
     console.error('💥 Fatal TypeScript Unit Test Error:', error);
     process.exit(1);
   });
