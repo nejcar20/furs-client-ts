@@ -2,9 +2,9 @@
 
 [![npm version](https://badge.fury.io/js/furs-client-ts.svg)](https://www.npmjs.com/package/furs-client-ts)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
-[![Build Status](https://github.com/nejcar20/furs-client-ts/workflows/CI/badge.svg)](https://github.com/nejcar20/furs-client-ts/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/furs-client-ts.svg)](https://nodejs.org/)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-support-yellow.svg)](https://buymeacoffee.com/nejcar20)
 
 > **Professional TypeScript client for FURS (Financial Administration of the Republic of Slovenia) invoice fiscalization and business premise registration with full type safety and IntelliSense support.**
 
@@ -170,6 +170,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 - 🐛 [Issue Tracker](https://github.com/nejcar20/furs-client-ts/issues)
 - 💬 [Discussions](https://github.com/nejcar20/furs-client-ts/discussions)
 - 📧 Email: Contact via GitHub
+- ☕ [Buy Me a Coffee](https://buymeacoffee.com/nejcar20) - Support development
 
 ## 🎯 Used By
 
@@ -185,9 +186,12 @@ Created and maintained by **nejcar20**
 
 - GitHub: [@nejcar20](https://github.com/nejcar20)
 - Repository: [furs-client-ts](https://github.com/nejcar20/furs-client-ts)
+- ☕ [Support my work](https://buymeacoffee.com/nejcar20)
 
 ---
 
 **Made with ❤️ for the Slovenian developer community**
 
 *Simplifying FURS integration with modern TypeScript development practices.*
+
+**☕ [Buy me a coffee](https://buymeacoffee.com/nejcar20) if this library helps you!**
