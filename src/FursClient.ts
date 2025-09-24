@@ -269,13 +269,12 @@ export class FursClient {
         uniqueInvoiceId,
         zoi,
       });
-
       return {
         invoiceNumber,
         uniqueInvoiceId,
         zoi,
-        success: true,
-        response: result.decoded?.InvoiceResponse,
+        success:invoiceNumber && uniqueInvoiceId ,
+        response: result.decoded?.payload.InvoiceResponse,
       };
     } catch (error: any) {
       this.log('Invoice fiscalization failed', { error: error.message });
