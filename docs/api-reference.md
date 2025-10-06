@@ -176,7 +176,7 @@ interface FursClientConfig {
   - **Required**: No (defaults to 'test')
   - **Options**: `'test'` | `'production'`
   - **Test**: `blagajne-test.fu.gov.si:9002`
-  - **Production**: `blagajne.fu.gov.si:9001`
+  - **Production**: `blagajne.fu.gov.si:9003`
 
 - **`debug`**: Enable detailed logging
   - **Required**: No (defaults to false)

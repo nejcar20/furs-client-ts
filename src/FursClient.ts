@@ -113,7 +113,7 @@ export class FursClient {
       },
       production: {
         baseUrl: 'blagajne.fu.gov.si',
-        port: 9001,
+        port: 9003,
       },
     };
 
@@ -273,7 +273,7 @@ export class FursClient {
         invoiceNumber,
         uniqueInvoiceId,
         zoi,
-        success:invoiceNumber && uniqueInvoiceId ,
+        success: invoiceNumber && uniqueInvoiceId,
         response: result.decoded?.payload.InvoiceResponse,
       };
     } catch (error: any) {

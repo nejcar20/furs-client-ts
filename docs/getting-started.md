@@ -201,7 +201,7 @@ const client = new FursClient({
   certPath: './certificates/production-cert.p12',
   certPassword: process.env.FURS_CERT_PASSWORD!,
   taxNumber: parseInt(process.env.FURS_TAX_NUMBER!),
-  environment: 'production', // Uses blagajne.fu.gov.si:9001
+  environment: 'production', // Uses blagajne.fu.gov.si:9003
   debug: false // Disable debug logging in production
 });
 ```
