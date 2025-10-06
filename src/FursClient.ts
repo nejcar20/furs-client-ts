@@ -262,6 +262,15 @@ export class FursClient {
         );
       }
 
+      this.log('Processing fiscalization result', {
+        hasDecoded: !!result.decoded,
+        decodedValid: result.decoded?.valid,
+        decodedError: result.decoded?.error,
+        hasPayload: !!result.decoded?.payload,
+        payloadKeys: result.decoded?.payload ? Object.keys(result.decoded.payload) : [],
+        fullDecoded: result.decoded,
+      });
+
       const uniqueInvoiceId = result.decoded?.payload?.InvoiceResponse?.UniqueInvoiceID;
 
       this.log('Invoice fiscalized successfully', {
@@ -477,8 +486,33 @@ export class FursClient {
 
           res.on('end', () => {
             try {
+              this.log('Raw response data', {
+                dataLength: data.length,
+                dataPreview: data.substring(0, 200),
+              });
+
               const response = JSON.parse(data);
+
+              this.log('Parsed FURS response', {
+                statusCode: res.statusCode,
+                hasToken: !!response.token,
+                responseKeys: Object.keys(response),
+                tokenPreview: response.token ? response.token.substring(0, 50) + '...' : 'NO TOKEN',
+              });
+
               const decoded = response.token ? decodeJWT(response.token) : null;
+
+              this.log('JWT decode result', {
+                hasDecoded: !!decoded,
+                decodedValid: decoded?.valid,
+                decodedError: decoded?.error,
+              });
+
+              if (decoded && !decoded.valid) {
+                this.log('JWT decoding failed', {
+                  error: decoded.error,
+                });
+              }
 
               resolve({
                 statusCode: res.statusCode!,
