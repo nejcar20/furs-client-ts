@@ -268,6 +268,9 @@ export class FursClient {
         invoiceNumber,
         uniqueInvoiceId,
         zoi,
+        decoded: result.decoded,
+        payload: result.decoded?.payload,
+        response: result.decoded?.payload?.InvoiceResponse,
       });
       return {
         invoiceNumber,
