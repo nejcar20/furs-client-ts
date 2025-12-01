@@ -58,16 +58,12 @@ jobs:
       - name: Run unit tests
         run: npm run test:ts:unit
 
-      # Integration tests only run if certificate is available
-      - name: Run integration tests (conditional)
-        if: env.CERT_AVAILABLE == 'true'
+      # Integration tests skipped in CI due to FURS IP restrictions
+      - name: Skip integration tests in CI
         run: |
-          echo "Running integration tests with certificate..."
-          npm run test:ts:integration
-
-      - name: Skip integration tests message
-        if: env.CERT_AVAILABLE == 'false'
-        run: echo "ℹ️ Integration tests skipped - no test certificate available"
+          echo "ℹ️ Integration tests skipped in CI environment"
+          echo "   Reason: FURS test server blocks requests from GitHub Actions IPs"
+          echo "   Run integration tests locally with: npm run test:ts:integration"
       - name: Verify package contents
         run: npm pack --dry-run
 
