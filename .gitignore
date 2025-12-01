@@ -83,13 +83,20 @@ temp/
 logs
 *.log
 
-# Certificate files (IMPORTANT: Never commit certificates)
+# Private certificate files (IMPORTANT: Never commit private certificates)
 *.p12
 *.pfx
-*.pem
-*.crt
 *.key
-*.cer
+*-private.pem
+test-certificate.*
+
+# Allow public CA certificates in certs-test/ and certs-prod/
+!certs-test/*.cer
+!certs-test/*.crt
+!certs-test/*.pem
+!certs-prod/*.cer
+!certs-prod/*.crt
+!certs-prod/*.pem
 
 # Local certificates directory for development
 local-certs/

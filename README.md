@@ -11,8 +11,9 @@
 ## ✨ Features
 
 - 🏢 **Business Premise Registration** - Register and manage business premises with FURS
-- 🧾 **Invoice Fiscalization** - Fiscalize invoices and generate EOR (Unique Invoice ID) 
+- 🧾 **Invoice Fiscalization** - Fiscalize invoices and generate EOR (Unique Invoice ID)
 - 🔐 **Certificate Authentication** - Secure P12 certificate-based authentication
+- 🔒 **TLS Certificate Validation** - Strict TLS validation with FURS CA certificates (ready for Nov 2025 update)
 - 🎯 **Full TypeScript Support** - Complete type definitions with IntelliSense
 - 🛡️ **Type Safety** - Compile-time error prevention and runtime validation
 - 🌍 **Environment Support** - Both test and production FURS environments
@@ -33,12 +34,14 @@ npm install furs-client-ts
 ```typescript
 import { FursClient, InvoiceRequest, BusinessPremiseRequest } from 'furs-client-ts';
 
-// Initialize with full type safety
+// Initialize with full type safety and secure TLS validation
 const client = new FursClient({
   certPath: './your-certificate.p12',
   certPassword: 'your-password',
   taxNumber: 12345678,
-  environment: 'test' // TypeScript ensures only 'test' | 'production'
+  environment: 'test', // TypeScript ensures only 'test' | 'production'
+  strictTLS: true, // Enable TLS certificate validation (default: true)
+  caCertsPath: './certs-test' // Optional: custom CA certs path (default: certs-{environment})
 });
 
 // Register business premise with typed interfaces
@@ -121,11 +124,59 @@ console.log('ZOI:', result.zoi);
 - ✅ Debug logging and error diagnostics
 - ✅ Source maps for easy debugging
 
+## 🔐 TLS Certificate Validation
+
+This library now supports **strict TLS certificate validation** for enhanced security when communicating with FURS servers.
+
+### Setup CA Certificates
+
+1. Download FURS CA certificates from [FURS Digital Certificates](https://www.fu.gov.si/nadzor/podrocja/davcne_blagajne/pomocnik_za_uporabnike_in_razvijalce_programske_opreme_za_davcne_blagajne/digitalna_potrdila/)
+
+2. Create certificate directories:
+```bash
+# For test environment
+mkdir certs-test
+# For production environment
+mkdir certs-prod
+```
+
+3. Place the following certificates in the appropriate directory:
+
+**Test Environment** (`certs-test/`):
+- `blagajne-test.fu.gov.si.cer` - TLS connection certificate
+- `DavPotRacTEST.cer` - Signing certificate
+- `sigov-ca2.xcert.crt` - SIGOV-CA intermediate certificate
+- `si-trust-root.crt` - SI-TRUST root certificate
+
+**Production Environment** (`certs-prod/`):
+- `blagajne.fu.gov.si.cer` - TLS connection certificate (updated Nov 2025)
+- `DavPotRac.cer` - Signing certificate
+- `sigov-ca2.xcert.crt` - SIGOV-CA intermediate certificate
+- `si-trust-root.crt` - SI-TRUST root certificate
+
+### Configuration Options
+
+```typescript
+const client = new FursClient({
+  certPath: './your-certificate.p12',
+  certPassword: 'your-password',
+  taxNumber: 12345678,
+  environment: 'production',
+
+  // TLS validation (recommended for production)
+  strictTLS: true, // Default: true - validates server certificates
+  caCertsPath: './certs-prod' // Default: certs-{environment}
+});
+```
+
+**Important**: Always use `strictTLS: true` in production to prevent man-in-the-middle attacks!
+
 ## 🔧 Requirements
 
 - Node.js >= 14.0.0
 - TypeScript >= 4.0.0 (for development)
 - Valid FURS P12 certificate
+- FURS CA certificates (for TLS validation)
 - Internet connection for FURS API access
 
 ## 📚 Documentation

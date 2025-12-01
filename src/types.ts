@@ -16,6 +16,10 @@ export interface FursClientConfig {
   endpoints?: Partial<FursEndpoints>;
   /** Enable debug logging */
   debug?: boolean;
+  /** Path to directory containing CA certificates (optional - defaults to certs-{environment}) */
+  caCertsPath?: string;
+  /** Enable strict TLS certificate validation (default: true) */
+  strictTLS?: boolean;
 }
 
 export interface FursEndpoints {

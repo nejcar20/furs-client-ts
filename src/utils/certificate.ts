@@ -1,4 +1,6 @@
 import * as forge from 'node-forge';
+import * as fs from 'fs';
+import * as path from 'path';
 import { CertificateInfo } from '../types';
 
 /**
@@ -144,4 +146,50 @@ export function getCertificateInfo(certBags: forge.pkcs12.Bag[]): CertificateInf
     validFrom: cert.validity.notBefore,
     validTo: cert.validity.notAfter,
   };
+}
+
+/**
+ * Load CA certificates from a directory for TLS validation
+ * @param caCertsPath - Path to directory containing CA certificates
+ * @returns Array of CA certificates in PEM format
+ */
+export function loadCACertificates(caCertsPath: string): string[] {
+  const caCerts: string[] = [];
+
+  if (!fs.existsSync(caCertsPath)) {
+    throw new Error(`CA certificates directory not found: ${caCertsPath}`);
+  }
+
+  const files = fs.readdirSync(caCertsPath);
+  const certFiles = files.filter(
+    (file) => file.endsWith('.cer') || file.endsWith('.crt') || file.endsWith('.pem')
+  );
+
+  if (certFiles.length === 0) {
+    throw new Error(`No certificate files found in: ${caCertsPath}`);
+  }
+
+  for (const certFile of certFiles) {
+    const certPath = path.join(caCertsPath, certFile);
+    const certData = fs.readFileSync(certPath);
+
+    // Convert DER to PEM if needed
+    let pemCert: string;
+    try {
+      // Try to read as PEM first
+      pemCert = certData.toString('utf8');
+      if (!pemCert.includes('BEGIN CERTIFICATE')) {
+        // It's DER format, convert to PEM
+        const derBuffer = certData.toString('binary');
+        const asn1 = forge.asn1.fromDer(derBuffer);
+        const cert = forge.pki.certificateFromAsn1(asn1);
+        pemCert = forge.pki.certificateToPem(cert);
+      }
+      caCerts.push(pemCert);
+    } catch (error: any) {
+      throw new Error(`Failed to load CA certificate ${certFile}: ${error.message}`);
+    }
+  }
+
+  return caCerts;
 }

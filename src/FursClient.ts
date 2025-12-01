@@ -3,7 +3,7 @@ import * as https from 'https';
 import * as crypto from 'crypto';
 import * as forge from 'node-forge';
 
-import { loadCertificate } from './utils/certificate';
+import { loadCertificate, loadCACertificates } from './utils/certificate';
 import { createJWT, decodeJWT } from './utils/jwt';
 import {
   generateZOI,
@@ -38,16 +38,15 @@ import {
  * FURS Client for invoice fiscalization and business premise registration
  */
 export class FursClient {
-  private readonly config: Required<
-    FursClientConfig & {
-      baseUrl: string;
-      port: number;
-      endpoints: FursEndpoints;
-    }
-  >;
+  private readonly config: Required<FursClientConfig> & {
+    baseUrl: string;
+    port: number;
+    endpoints: FursEndpoints;
+  };
   private privateKey!: forge.pki.PrivateKey;
   private certificateInfo!: CertificateInfo;
   private certData!: Buffer;
+  private caCerts: string[] = [];
 
   /**
    * Create a new FURS client
@@ -55,10 +54,16 @@ export class FursClient {
    */
   constructor(config: FursClientConfig) {
     this.validateConfig(config);
+
+    const environment = config.environment || 'test';
+    const caCertsPath = config.caCertsPath || `certs-${environment}`;
+
     this.config = {
       ...config,
-      environment: config.environment || 'test',
+      environment,
       debug: config.debug || false,
+      strictTLS: config.strictTLS !== false, // Default to true
+      caCertsPath,
       endpoints: {
         businessPremise: '/v1/cash_registers/invoices/register',
         invoice: '/v1/cash_registers/invoices',
@@ -74,8 +79,13 @@ export class FursClient {
     // Load certificate
     this.loadCertificateData();
 
+    // Load CA certificates for TLS validation
+    this.loadCACertificates();
+
     this.log('FURS Client initialized', {
       environment: this.config.environment,
+      strictTLS: this.config.strictTLS,
+      caCertsLoaded: this.caCerts.length,
     });
   }
 
@@ -144,6 +154,33 @@ export class FursClient {
       });
     } catch (error: any) {
       throw new FursAuthenticationError(`Failed to load certificate: ${error.message}`);
+    }
+  }
+
+  /**
+   * Load CA certificates for TLS validation
+   */
+  private loadCACertificates(): void {
+    if (!this.config.strictTLS) {
+      this.log('Strict TLS disabled - skipping CA certificate validation');
+      return;
+    }
+
+    try {
+      this.caCerts = loadCACertificates(this.config.caCertsPath);
+      this.log('CA certificates loaded successfully', {
+        count: this.caCerts.length,
+        path: this.config.caCertsPath,
+      });
+    } catch (error: any) {
+      this.log('Warning: Failed to load CA certificates', {
+        error: error.message,
+        path: this.config.caCertsPath,
+      });
+      // If strictTLS is enabled but CA certs can't be loaded, throw an error
+      throw new FursAuthenticationError(
+        `Failed to load CA certificates for TLS validation: ${error.message}`
+      );
     }
   }
 
@@ -479,12 +516,15 @@ export class FursClient {
           },
           pfx: this.certData,
           passphrase: this.config.certPassword,
-          rejectUnauthorized: false,
+          rejectUnauthorized: this.config.strictTLS,
+          ca: this.config.strictTLS ? this.caCerts : undefined,
         };
 
         this.log('Sending request to FURS', {
           endpoint,
           dataLength: requestData.length,
+          strictTLS: this.config.strictTLS,
+          caCertsCount: this.caCerts.length,
         });
 
         const req = https.request(options, (res) => {
