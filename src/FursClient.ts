@@ -488,8 +488,16 @@ export class FursClient {
             try {
               this.log('Raw response data', {
                 dataLength: data.length,
-                dataPreview: data.substring(0, 200),
+                dataPreview: data.substring(0, 500) + (data.length > 500 ? '...' : ''),
               });
+
+              // Check if response is HTML (error page)
+              if (data.trim().startsWith('<')) {
+                const error = `FURS returned HTML error page instead of JSON. Status: ${res.statusCode}. This usually means: 1) Wrong certificate (production requires production cert), 2) Certificate not registered with FURS, 3) IP not whitelisted, or 4) Invalid request format. Response: ${data.substring(0, 500)}`;
+                this.log('HTML error page received', { error });
+                reject(new FursError(error));
+                return;
+              }
 
               const response = JSON.parse(data);
 
