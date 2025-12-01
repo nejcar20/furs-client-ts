@@ -217,7 +217,7 @@ export class FursClient {
     const invoiceNumber = invoice.invoiceNumber || generateId('INV');
     const now = new Date();
     const issueDateTime = invoice.issueDateTime || now.toISOString();
-
+    console.log('Invoice data: ', invoice);
     // Generate ZOI (Protected ID)
     const zoi = generateZOI(
       this.privateKey,
