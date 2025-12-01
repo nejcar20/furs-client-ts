@@ -272,15 +272,25 @@ export class FursClient {
       });
 
       const uniqueInvoiceId = result.decoded?.payload?.InvoiceResponse?.UniqueInvoiceID;
-
-      this.log('Invoice fiscalized successfully', {
-        invoiceNumber,
-        uniqueInvoiceId,
-        zoi,
-        decoded: result.decoded,
-        payload: result.decoded?.payload,
-        response: result.decoded?.payload?.InvoiceResponse,
-      });
+      if (!uniqueInvoiceId) {
+        this.log('UniqueInvoiceID missing in response', {
+          response: result.decoded?.payload?.InvoiceResponse,
+          invoiceNumber,
+          uniqueInvoiceId,
+          zoi,
+          decoded: result.decoded,
+          payload: result.decoded?.payload,
+        });
+      } else {
+        this.log('Invoice fiscalized successfully', {
+          invoiceNumber,
+          uniqueInvoiceId,
+          zoi,
+          decoded: result.decoded,
+          payload: result.decoded?.payload,
+          response: result.decoded?.payload?.InvoiceResponse,
+        });
+      }
       return {
         invoiceNumber,
         uniqueInvoiceId,
