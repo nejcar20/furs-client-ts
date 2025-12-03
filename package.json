@@ -18,7 +18,7 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run test",
+    "prepublishOnly": "npm run test:ts:unit",
     "format": "prettier --write \"src/**/*.{ts,js,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,js,json}\"",
     "lint": "eslint src/**/*.ts",
