@@ -250,8 +250,10 @@ export class FursClient {
    */
   public async fiscalizeInvoice(invoice: InvoiceRequest): Promise<InvoiceResult> {
     this.log('Fiscalizing invoice...');
-
-    const invoiceNumber = invoice.invoiceNumber || generateId('INV');
+    if (!invoice.invoiceNumber) {
+      throw new FursValidationError('Invoice number is required');
+    }
+    const invoiceNumber = invoice.invoiceNumber;
     const now = new Date();
     const issueDateTime = invoice.issueDateTime || now.toISOString();
     console.log('Invoice data: ', invoice);
