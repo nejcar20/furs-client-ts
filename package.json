@@ -1,6 +1,6 @@
 {
   "name": "furs-client-ts",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Professional TypeScript client for FURS (Slovenian Financial Administration) invoice fiscalization and business premise registration with full type safety and IntelliSense support",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "clean": "rimraf dist",
     "prebuild": "npm run clean",
     "prepare": "npm run build",
-    "prepublishOnly": "npm run test",
+    "prepublishOnly": "npm run test:ts:unit",
     "format": "prettier --write \"src/**/*.{ts,js,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,js,json}\"",
     "lint": "eslint src/**/*.ts",
